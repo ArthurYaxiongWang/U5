@@ -1,10 +1,21 @@
-require 'faker'
+require 'csv'
 
-676.times do
+Product.destroy_all
+Category.destroy_all
+
+csv_file = Rails.root.join('db/products.csv')
+csv_data = File.read(csv_file)
+products = CSV.parse(csv_data, headers: true)
+
+products.each do |product|
+  category_name = product['category']
+  category = Category.find_or_create_by(name: category_name)
+
   Product.create(
-    title: Faker::Commerce.product_name,
-    description: Faker::Lorem.paragraph,
-    price: Faker::Commerce.price(range:0..100.0),
-    stock_quantity: Faker::Number.between(from: 1, to: 100)
+    title: product['name'],
+    description: product['description'],
+    price: product['price'],
+    stock_quantity: product['stock quantity'],
+    category: category
   )
 end
